@@ -35,69 +35,29 @@ The architecture is source-agnostic, so new sources can be added under `app/sour
 
 ## Pipeline
 
-```mermaid
-flowchart TD
-    start[Pipeline Start]
-    connection[Connection Check]
-    start --> connection
-
-    subgraph ingestion[Ingestion]
-        direction LR
-        ingest_split:::hidden
-        keyword[Keyword Search]
-        feed[Personal Feed]
-        email[Email Alerts]
-        ingest_split --> keyword
-        ingest_split --> feed
-        ingest_split --> email
-        keyword ~~~ feed
-        feed ~~~ email
-    end
-
-    connection --> ingest_split
-
-    subgraph screening[Screening]
-        direction TB
-        triage[Title Triage]
-        detail[Detail Fetch]
-        enrich[JD Enrichment]
-        rank[Ranking]
-        triage --> detail
-        detail --> enrich
-        enrich --> rank
-    end
-
-    keyword --> triage
-    feed --> triage
-    email --> triage
-
-    subgraph application[Application]
-        direction LR
-        app_split:::hidden
-        easy[Easy Apply]
-        external[External Apply]
-        app_split --> easy
-        app_split -.-> external
-        easy ~~~ external
-    end
-
-    rank --> app_split
-    easy --> review[Review + Submit]
-    external --> ext_note[Audit / Probe Only]
-
-    subgraph confirmation[Confirmation]
-        direction LR
-        confirm_email[Email Confirmation]
-        confirm_ui[LinkedIn UI]
-    end
-
-    review --> confirm_email
-    review --> confirm_ui
-    confirm_email --> applied[Applied]
-    confirm_ui --> applied
-
-    style external stroke-dasharray: 5 5
-    classDef hidden fill:none,stroke:none,color:transparent;
+```text
+Start
+  |
+Check
+  |
+  +-- Source: Search
+  |
+  +-- Source: Feed
+  |
+  +-- Source: Email
+          |
+          v
+Screen: Triage
+  |
+Screen: Detail
+  |
+Screen: Enrich
+  |
+Screen: Rank
+  |
+  +-- Apply: Easy -> Review -> Confirm: Email/UI -> Applied
+  |
+  +-- Apply: External -> Audit / Probe only
 ```
 
 
