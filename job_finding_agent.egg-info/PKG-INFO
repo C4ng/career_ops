@@ -1,0 +1,95 @@
+Metadata-Version: 2.4
+Name: job-finding-agent
+Version: 0.1.0
+Summary: Prototype backend for a job-finding and application-assist system.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: beautifulsoup4<5.0.0,>=4.12.0
+Requires-Dist: fastapi<1.0.0,>=0.116.0
+Requires-Dist: google-adk<2.0.0,>=1.13.0
+Requires-Dist: httpx<1.0.0,>=0.28.0
+Requires-Dist: playwright<2.0.0,>=1.53.0
+Requires-Dist: pydantic<3.0.0,>=2.11.0
+Requires-Dist: pydantic-settings<3.0.0,>=2.7.0
+Requires-Dist: pyyaml<7.0.0,>=6.0.2
+Requires-Dist: uvicorn<1.0.0,>=0.35.0
+Provides-Extra: dev
+Requires-Dist: pytest<9.0.0,>=8.4.0; extra == "dev"
+
+# Job Finding Agent
+
+This branch is the clean rebuild branch.
+
+- Frozen prototype: `v0-prototype`
+- Frozen tag: `v0`
+- Current rebuild branch: `v1-rebuild`
+
+The goal of this branch is to rebuild the project in a more controlled way:
+
+- define the system in small reviewed steps
+- implement one slice at a time
+- keep input/output logs inside the project
+- keep the codebase minimal and explicit
+
+Current repo state:
+
+- `app/`: application code
+- `config/`: runtime config
+- `prompts/`: future prompt files
+- `scripts/`: runnable entrypoints
+- `tests/`: test suite
+- `data/logs/`: runtime logs
+- `data/job_finding.sqlite3`: runtime database
+- `docs/`: design docs for the rebuild
+
+LinkedIn rebuild structure:
+
+- `docs/linkedin/`: step docs and user instructions
+- `app/linkedin/`: LinkedIn-specific code
+- `scripts/linkedin/`: stage runners
+- `config/app.yaml`: global runtime config
+
+Start from:
+
+- [docs/01-project-phases.md](docs/01-project-phases.md)
+- [docs/02-linkedin-slice.md](docs/02-linkedin-slice.md)
+- [docs/03-logging-contract.md](docs/03-logging-contract.md)
+- [docs/linkedin/00-linkedin-sources.md](docs/linkedin/00-linkedin-sources.md)
+- [docs/linkedin/01-step0-connection.md](docs/linkedin/01-step0-connection.md)
+
+Current LinkedIn pipeline:
+
+1. browser connection check
+2. browser source ingestion
+   - keyword search
+   - recommended feed
+3. email source ingestion
+4. title triage
+5. detail fetch
+6. JD enrichment
+7. ranking
+8. Easy Apply assistant (separate no-submit runner)
+
+Current persistence design:
+
+- stage logs under `data/logs/`
+- direct writes to SQLite
+- no intermediate runtime artifacts
+
+Current job lifecycle:
+
+- `discovered`
+- `triaged`
+- `detailed`
+- `enriched`
+- `not_applicable`
+
+Current LLM stage docs:
+
+- [docs/linkedin/llm/title-triage.md](docs/linkedin/llm/title-triage.md)
+- [docs/linkedin/llm/jd-enrichment.md](docs/linkedin/llm/jd-enrichment.md)
+- [docs/linkedin/llm/ranking.md](docs/linkedin/llm/ranking.md)
+
+Current application-assistant doc:
+
+- [docs/linkedin/06-easy-apply-assistant.md](docs/linkedin/06-easy-apply-assistant.md)

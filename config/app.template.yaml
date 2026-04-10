@@ -1,0 +1,331 @@
+logging:
+  level: "INFO"
+
+system:
+  storage:
+    sqlite:
+      db_path: "data/job_finding.sqlite3"
+
+  llm:
+    title_triage:
+      provider: "gemini"
+      api_key_env: "GOOGLE_API_KEY"
+      model: "gemini-2.5-flash"
+      temperature: 0.0
+      batch_size: 20
+      prompt_version: "v1"
+
+    jd_enrichment:
+      provider: "gemini"
+      api_key_env: "GOOGLE_API_KEY"
+      model: "gemini-2.5-flash"
+      temperature: 0.0
+      batch_size: 5
+      max_batches_per_run: 5
+      timeout_seconds: 180
+      prompt_version: "v2"
+
+    ranking:
+      provider: "gemini"
+      api_key_env: "GOOGLE_API_KEY"
+      model: "gemini-2.5-flash"
+      temperature: 0.0
+      batch_size: 5
+      max_batches_per_run: 5
+      timeout_seconds: 180
+      prompt_version: "v6"
+
+    application_question_mapping:
+      provider: "gemini"
+      api_key_env: "GOOGLE_API_KEY"
+      model: "gemini-2.5-flash"
+      temperature: 0.0
+      batch_size: 10
+      prompt_version: "v1"
+
+  linkedin:
+    connection:
+      cdp_url: "http://127.0.0.1:9222"
+      test_url: "https://www.linkedin.com/feed/"
+      expected_domain_contains: "linkedin.com"
+
+    email:
+      provider: "imap"
+      host: "imap.gmail.com"
+      port: 993
+      mailbox: "INBOX"
+
+    collection:
+      max_offsets: 10
+      keyword_search_page_step: 25
+      recommended_feed_page_step: 24
+
+user:
+  linkedin:
+    email_notifications:
+      username: "your_email@example.com"
+      password_env: "GMAIL_PASSWORD"
+      sender: "jobalerts-noreply@linkedin.com"
+      lookback_days: 7
+      max_messages: 30
+
+    sources:
+      source_type:
+        - "keyword_search"
+        - "recommended_feed"
+      title_exclude_contains:
+        - "senior"
+        - "staff"
+        - "manager"
+        - "lead"
+      collect_limit: 50
+
+      keyword_search:
+        keywords: "AI Engineer"
+        location: "Toronto, Ontario, Canada"
+        posted_window: "past_week"
+        experience_levels:
+          - "internship"
+          - "entry"
+          - "associate"
+          - "mid_senior"
+
+      recommended_feed:
+        recommended_url: "https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4368504837&discover=recommended&discoveryOrigin=JOBS_HOME_JYMBII"
+
+    title_triage:
+      goal: >
+        Decide whether a LinkedIn job card is worth opening based only on
+        title, company, location, and work mode.
+        The target is broad AI work at either:
+        1. applied or product engineering level, or
+        2. research, modeling, inference, or AI systems level.
+        Prefer keep when there is a clear AI, ML, LLM, NLP, model, inference,
+        training, evaluation, agent, or agentic signal in the title.
+
+      role_intent:
+        applied_ai_engineering: >
+          Keep roles focused on building, integrating, deploying, or operating AI systems
+          in products or workflows. This includes AI engineers, ML engineers, LLM engineers,
+          agent or agentic engineers, AI platform engineers, AI automation engineers,
+          prompt engineers, and software or python engineers when the title has an explicit AI/ML cue.
+        research_and_modeling: >
+          Keep roles focused on research, modeling, training, inference, evaluation,
+          NLP, model systems, applied science, or AI systems research.
+          This includes research engineer, applied scientist, ML scientist,
+          model engineer, inference engineer, and technical staff roles when the title
+          clearly references AI, ML, LLM, NLP, models, training, inference, or research.
+      wanted_roles:
+        - "Applied AI Engineer"
+        - "Machine Learning Engineer"
+        - "LLM Engineer"
+        - "GenAI Engineer"
+        - "Agent Engineer"
+        - "Agentic AI Engineer"
+        - "AI Platform Engineer"
+        - "Research Engineer"
+        - "Applied Scientist"
+        - "ML Scientist"
+        - "Prompt Engineer"
+        - "AI Automation Engineer"
+        - "Data Scientist"
+        - "Python Developer"
+        - "Software Engineer with explicit AI/ML cue"
+        - "Technical Staff with explicit AI/ML/model/research cue"
+      wanted_technical_cues:
+        - "ai"
+        - "ml"
+        - "machine learning"
+        - "llm"
+        - "genai"
+        - "agent"
+        - "agentic"
+        - "rag"
+        - "nlp"
+        - "prompt"
+        - "model"
+        - "models"
+        - "modeling"
+        - "inference"
+        - "training"
+        - "fine-tuning"
+        - "evaluation"
+        - "research"
+        - "applied science"
+        - "ai platform"
+        - "ml platform"
+        - "automation"
+      decision_rules:
+        - "Keep titles that clearly look like AI, ML, LLM, GenAI, agent, RAG, NLP, modeling, or research roles."
+        - "Keep technical titles that are somewhat broad if they contain clear AI/ML/LLM/agentic cues."
+        - "Discard broad backend, platform, or data engineering titles unless the title itself contains a clear AI/ML/LLM/agentic cue."
+        - "When uncertain, prefer keep over discard."
+        - "When a title contains a strong AI, ML, model, inference, NLP, agent, or research cue, do not discard it just because the surrounding role family is broad."
+        - "Technical Staff titles should usually be kept when they include AI, models, inference, agents, NLP, training, or research cues."
+      strong_keep_patterns:
+        - "Titles with explicit AI/ML/LLM/NLP/model/research cues should usually be kept."
+        - "Technical Staff titles should be kept when they include AI, model, inference, training, NLP, agents, or research cues."
+        - "Research-oriented titles should be kept when they mention models, AI systems, NLP, inference, training, or applied science."
+        - "Broad engineering titles should be kept when they include explicit AI/ML cues."
+      discard_patterns:
+        - "Discard broad backend, platform, firmware, systems, or data engineering titles if they do not contain a clear AI/ML/LLM/NLP/model/research cue."
+        - "Discard jobs whose location is clearly incompatible with the location policy."
+        - "When the title is broad but contains a strong AI/ML cue, prefer keep over discard."
+      location_policy:
+        - "Remote is acceptable anywhere."
+        - "Hybrid or on-site is acceptable if clearly in Toronto."
+        - "If hybrid or on-site is clearly in another location, discard."
+        - "If location is vague or not explicit enough to tell, keep for later review."
+      important_examples:
+        keep:
+          - "Member of Technical Staff, AI Models Research"
+          - "AI/ML Systems Design Engineer"
+          - "Research Engineer, AI Systems"
+          - "Inference Engineer"
+          - "Machine Learning Engineer"
+          - "Agentic AI Engineer"
+          - "Software Engineer, AI Platform"
+          - "Prompt Engineer"
+        discard:
+          - "Software Engineer II"
+          - "Backend Engineer"
+          - "Data Engineer"
+          - "Firmware Engineer"
+          - "Platform Engineer"
+          - "Forward Deployed Engineer"
+
+    ranking:
+      profile_version: "v2"
+      target:
+        preferred_roles:
+          - "Applied AI Engineer"
+          - "Machine Learning Engineer"
+        acceptable_roles:
+          - "Data Scientist"
+          - "Software Engineer with explicit AI/ML cue"
+        preferred_domains:
+          - "LLM applications"
+          - "agent systems"
+          - "RAG"
+          - "NLP"
+          - "evaluation"
+          - "applied AI product"
+          - "model integration"
+        acceptable_domains:
+          - "general machine learning"
+          - "applied science"
+          - "AI platform"
+          - "ML infrastructure"
+          - "computer vision"
+          - "robotics"
+          - "autonomous systems"
+          - "sensor fusion"
+          - "simulation-based ML"
+        preferred_work_styles:
+          - "applied_ai_product"
+          - "agent_system_building"
+        acceptable_work_styles:
+          - "ai_platform"
+          - "pure_research"
+      candidate_profile:
+        seniority_preference:
+          preferred:
+            - "entry"
+            - "junior"
+          acceptable:
+            - "mid"
+          avoid:
+            - "senior"
+            - "staff"
+            - "principal"
+        strengths:
+          - "Python"
+          - "LLM applications"
+        tech_familiarity:
+          - "PyTorch"
+          - "Hugging Face"
+        weaker_areas:
+          - "very senior production ownership"
+        constraints:
+          - "I am not currently an enrolled student."
+          - "Roles that explicitly require current student or registered student status are not applicable."
+      preferences:
+        preferred:
+          work_mode:
+            - "remote"
+          employment_type:
+            - "full-time"
+        acceptable:
+          work_mode:
+            - "hybrid_toronto"
+          employment_type:
+            - "contract"
+        lower_preference_signals:
+          - "very busy environment"
+
+    application_assistant:
+      target_recommendations:
+        - "apply_auto"
+      max_jobs_per_run: 1
+      max_steps_per_job: 10
+      application_type: "linkedin_easy_apply"
+      candidate_dossier:
+        profile_version: "v1"
+        contact:
+          first_name: "Your"
+          last_name: "Name"
+          email: "your_email@example.com"
+          phone: "+1-555-555-5555"
+          city: "Toronto"
+          region: "ON"
+          country: "Canada"
+          postal_code: "M5V 0A0"
+        links:
+          linkedin_url: "https://www.linkedin.com/in/your-profile/"
+          github_url: "https://github.com/your-handle"
+          portfolio_url: "https://your-portfolio.example.com"
+        work_authorization:
+          work_country: "Canada"
+          legally_authorized: true
+          requires_sponsorship_now: false
+          requires_sponsorship_future: false
+        education:
+          highest_degree: "Master's"
+          field_of_study: "Computer Science"
+          school_name: "Your University"
+          graduation_date: "2025-06"
+          currently_enrolled: false
+        experience:
+          years_total: "2"
+          current_title: "AI Engineer"
+          summary: "Applied AI engineer focused on LLM applications, agent systems, and Python product work."
+          highlights:
+            - "Built applied AI and agentic systems with Python."
+            - "Worked on prompt engineering, evaluation, and production-oriented integrations."
+        documents:
+          resume_path: "data/documents/resume.pdf"
+          cover_letter_path: null
+        application_preferences:
+          notice_period: "2 weeks"
+          desired_salary: "100000 CAD"
+          willing_to_relocate: false
+        strengths:
+          - "Python"
+          - "LLM applications"
+          - "agent systems"
+          - "evaluation"
+        tech_familiarity:
+          - "PyTorch"
+          - "Hugging Face"
+          - "FastAPI"
+        constraints:
+          - "Not currently an enrolled student."
+        standard_answers:
+          current_student_status: "No"
+          canada_work_authorization_status: "Yes (Work Permit)"
+          work_permit_type: "PGWP"
+          english_proficiency: "Professional"
+          criminal_history_pending_or_convicted: "No"
+          future_opportunities_contact: "Yes"
+
+    

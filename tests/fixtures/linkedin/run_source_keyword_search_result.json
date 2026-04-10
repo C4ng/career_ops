@@ -1,0 +1,67 @@
+{
+  "searched_at": "2026-03-26T00:00:00Z",
+  "source_type": "keyword_search",
+  "source_url": "https://www.linkedin.com/jobs/search/?keywords=AI+Engineer&location=Toronto%2C+Ontario%2C+Canada&start=0&f_TPR=r604800&f_E=1%2C2%2C4",
+  "cards_requested_total": 30,
+  "unique_cards_total": 2,
+  "title_filtered_total": 1,
+  "title_filtered_titles": [
+    "Senior Machine Learning Engineer"
+  ],
+  "duplicates_skipped_total": 0,
+  "offsets_visited": [
+    0
+  ],
+  "stopped_reason": "chunk_smaller_than_page_step",
+  "chunks": [
+    {
+      "start": 0,
+      "raw_nodes_matched": 3,
+      "raw_nodes_checked": 3,
+      "cards_extracted": 2,
+      "title_filtered": 1,
+      "duplicates_skipped": 0,
+      "unique_cards_kept": 2,
+      "final_populated_rows_in_chunk": 3
+    }
+  ],
+  "job_cards": [
+    {
+      "source": "linkedin",
+      "source_type": "keyword_search",
+      "observed_at": "2026-03-26T00:00:00Z",
+      "linkedin_job_id": "4389722027",
+      "job_url": "https://www.linkedin.com/jobs/view/4389722027/",
+      "title": "Gen AI Data Engineer",
+      "company": "CONFLUX SYSTEMS",
+      "location_text": "Toronto, ON (Hybrid)",
+      "work_mode": "hybrid",
+      "observed_posted_text": "25 minutes ago",
+      "salary_text": "$126.2K/yr - $189.2K/yr",
+      "easy_apply": true,
+      "badges": [
+        "Promoted",
+        "Easy Apply"
+      ],
+      "raw_card_text": "Gen AI Data Engineer Toronto, ON (Hybrid)"
+    },
+    {
+      "source": "linkedin",
+      "source_type": "keyword_search",
+      "observed_at": "2026-03-26T00:00:00Z",
+      "linkedin_job_id": "4389310564",
+      "job_url": "https://www.linkedin.com/jobs/view/4389310564/",
+      "title": "Prompt Engineer (LLM Automation for Data Labeling & Localization)",
+      "company": "Synodex",
+      "location_text": "Toronto, ON (On-site)",
+      "work_mode": "on_site",
+      "observed_posted_text": "2 days ago",
+      "salary_text": null,
+      "easy_apply": false,
+      "badges": [
+        "Be an early applicant"
+      ],
+      "raw_card_text": "Prompt Engineer (LLM Automation for Data Labeling & Localization)"
+    }
+  ]
+}
